@@ -102,6 +102,11 @@ var defaultTheme = {
     },
     footnote: {
       'font-size': '12px',
+    },
+    br: {
+      "padding": ".2em 0",
+      "display": "block",
+      "content": "' '"
     }
   }
 }

@@ -6,7 +6,8 @@ var app = new Vue({
       aboutOutput: '',
       output: '',
       source: '',
-      editorThemes: ['base16-light', 'monokai'],
+      codeThemes: ['github', 'vs', 'dark', 'hopscotch', 'obsidian', 'rainbow'],
+      currentCodeTheme: 'github',
       currentEditorTheme: 'base16-light',
       editor: null,
       builtinFonts: [
@@ -28,6 +29,9 @@ var app = new Vue({
       theme: this.currentEditorTheme,
       mode: 'text/x-markdown',
     });
+    hljs.configure({
+      tabReplace: '  '
+    })
     this.editor.on("change", function(cm, change) {
       self.refresh()
     })
@@ -45,14 +49,18 @@ var app = new Vue({
   },
   methods: {
     renderWeChat: function (source) {
-      var output = marked(source, { renderer: this.wxRenderer.getRenderer() })
+      var output = marked(source, {renderer: this.wxRenderer.getRenderer() })
       if (this.wxRenderer.hasFootnotes()) {
         output += this.wxRenderer.buildFootnotes()
       }
       return output
     },
-    themeChanged: function () {
-      this.editor.setOption('theme', this.currentEditorTheme)
+    themeChanged: function (theme) {
+      for (let link of document.querySelectorAll('link.code_style')) {
+        link.rel = 'stylesheet';
+        link.disabled = !link.href.match(theme + '\\.css$');
+      }
+      this.refresh()
     },
     fontChanged: function (fonts) {
       this.wxRenderer.setOptions({

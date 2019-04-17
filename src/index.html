@@ -15,24 +15,26 @@
   <link rel="stylesheet" href="codemirror/theme/monokai.css">
   <link rel="stylesheet" href="assets/css/app.css">
   
+  <link class="code_style" rel="stylesheet" href="assets/css/github.css">
+  <link class="code_style" rel="stylesheet" href="assets/css/vs.css">
+  <link class="code_style" rel="stylesheet alternate" href="assets/css/dark.css">
+  <link class="code_style" rel="stylesheet alternate" href="assets/css/hopscotch.css">
+  <link class="code_style" rel="stylesheet alternate" href="assets/css/obsidian.css">
+  <link class="code_style" rel="stylesheet alternate" href="assets/css/rainbow.css">
   <script src="assets/scripts/axios.min.js"></script>
   <script src="assets/scripts/marked.min.js"></script>
   <script src="assets/scripts/vue.js"></script>
   <script src="assets/scripts/vue-eleui.js"></script>
   <script src="assets/scripts/FuriganaMD.js"></script>
-
+  <script src="assets/scripts/highlight.min.js"></script>
   <script src="codemirror/codemirror.js"></script>
   <script src="codemirror/mode/markdown/markdown.js"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4178606-10"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-4178606-10');
-  </script>
+  <script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
 </head>
 <body>
-  <div id="app" class="container">
+  <div id="app" class="container page-container">
     <el-container>
       <el-header class="top">
         <div class="logo">WeChat Format</div>
@@ -48,12 +50,22 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <!--el-form-item label="Code Themes" label-width="120px">
+            <el-select v-model="currentCodeTheme" size="mini" placeholder="选择代码样式" @change="themeChanged">
+              <el-option v-for="theme in codeThemes" 
+                :key="theme"
+                :label="theme"
+                :value="theme">
+                <span style="float: left">{{ theme }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item-->
         </el-form>
         <el-button class="about" @click="aboutDialogVisible = true">关于</el-button>
       </el-header>
       <el-main class="main-body">
         <el-row :gutter="10" class="main-section">
-          <el-col :span="12">
+          <el-col :span="12" class="editor-wrapper">
             <textarea
               id="editor"
               type="textarea"
@@ -81,16 +93,16 @@
         <p>能解决 <code>ul</code> 和 <code>ol</code> 渲染时样式被微信编辑器重置的问题；</p>
         <p>能把外部链接自动转为参考文献索引，并且附在文章末尾</p>
         <p>&nbsp;</p>
-        <h3>关于我</h3>
-        <p>我是 Lyric。如果你喜欢我的工具，可以：</p>
-        <p>关注我的公众号 "<code>iamlyricw</code>"，<a href='https://lyric.im' target='_blank' class='url'>博客</a> 或 <a href='https://github.com/lyricat/wechat-format' target='_blank' class='url'>Github</a></p>
+        <h3>感谢</h3>
+        <p>感谢 Lyric 提供此工具，能让我在此基础上添加了支持代码高亮和 MathML 的支持。</p>
+        <p>关注 Lyric 的公众号 "<code>iamlyricw</code>"，<a href='https://lyric.im' target='_blank' class='url'>博客</a> 或 <a href='https://github.com/lyricat/wechat-format' target='_blank' class='url'>Github</a></p>
         <p>
-          微信打赏我：
+          微信打赏 Lyric ：
           <img src="./assets/images/wechat_qrcode.jpg" style="width: 60%; display: block; margin: 0 auto;"/>
         </p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="aboutDialogVisible = false">打赏了！</el-button>
+        <el-button type="primary" @click="aboutDialogVisible = false">知道了</el-button>
       </span>
     </el-dialog>
   </div>

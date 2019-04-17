@@ -57,6 +57,7 @@ section {
   display: flex;
   height: 100%;
 }
+
 .hint {
   opacity: 0.6;
   margin: 20px 0;
@@ -70,7 +71,7 @@ section {
   box-shadow: 0 0 60px rgba(0,0,0,0.1);
 }
 .preview ul, .preview ol {
-  padding-left: 40px !important;
+  padding-left: 30px !important;
 }
 .CodeMirror {
   height: 100%;
@@ -90,7 +91,7 @@ section {
 }
 .code-snippet__fix {
   word-wrap: break-word !important;
-  ont-size: 14px;
+  font-size: 14px;
   margin: 10px 0;
   display: block;
   color: #333;
@@ -138,4 +139,43 @@ section {
   display: flex;
   position: relative;
   font-family: Consolas,"Liberation Mono",Menlo,Courier,monospace;
+}
+
+.code-snippet__fix pre.code-snippet{
+  white-space: pre;
+}
+
+
+.hljs-ln td.hljs-ln-numbers {
+  text-align: center;
+  color: rgba(0,0,0,0.15);
+  vertical-align: middle;
+  padding: 0 1em 0 1.5em;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.hljs-ln .hljs-ln-line{
+  padding-left: .3em;
+}
+td.hljs-ln-code {
+  padding-left: 0px;
+}
+
+@media (max-width: 768px){
+  .el-main{
+    padding:0;
+  }
+  .main-section, .editor-wrapper, .preview-wrapper{
+    width: 100%;
+    display: block;
+  }
+  .preview{
+    margin: 0;
+    width: 100%;
+    padding: 20px 0;
+  }
 }

@@ -6,10 +6,12 @@ var WxRenderer = function (opts) {
   var footnotes = []
   var footnoteindex = 0
   var styleMapping = null
-
+  
   var FONT_FAMILY_MONO = "Operator Mono, Consolas, Monaco, Menlo, monospace"
 
   var COPY = function (base, extend) { return Object.assign({}, base, extend)}
+
+  var mathJaxRunning = false
 
   this.buildTheme = function (themeTpl) {
     var mapping = {}
@@ -58,9 +60,9 @@ var WxRenderer = function (opts) {
   this.buildFootnotes = function () {
     var footnoteArray = footnotes.map(function (x) {
       if (x[1] === x[2]) {
-        return '<code style="font-size: 90%; opacity: 0.6;">[' + x[0] + ']</code>: <i>'  + x[1] +'</i><br/>'
+        return '<code style="font-size: 90%; opacity: 0.6;">[' + x[0] + ']</code>: <i>'  + x[1] +'</i><br '+ S('br') +'/>'
       }
-      return '<code style="font-size: 90%; opacity: 0.6;">[' + x[0] + ']</code> ' + x[1] + ': <i>'  + x[2] +'</i><br/>'
+      return '<code style="font-size: 90%; opacity: 0.6;">[' + x[0] + ']</code> ' + x[1] + ': <i>'  + x[2] +'</i><br '+ S('br') +'/>'
     })
     return '<h3 ' + S('h3') + '>References</h3><p ' + S('footnotes') + '>'  + footnoteArray.join('\n') + '</p>'
   }
@@ -70,8 +72,20 @@ var WxRenderer = function (opts) {
   }
 
   this.hasFootnotes = function () {
+    let self = this
+    !mathJaxRunning && setTimeout(() => {
+      if(window.MathJax){
+        MathJax.Hub.Queue(
+          ["Typeset", MathJax.Hub, "\\(ax^2 + bx + c = 0\\)"], ["none", self]
+        )
+      }
+      mathJaxRunning = false
+    }, 2000)
+    mathJaxRunning = true
     return footnotes.length !== 0
   }
+
+  this.none = function(){}
 
   this.getRenderer = function () {
     footnotes = []
@@ -80,7 +94,6 @@ var WxRenderer = function (opts) {
     styleMapping = this.buildTheme(this.opts.theme)
     var renderer = new marked.Renderer()
     FuriganaMD.register(renderer);
-  
     renderer.heading = function (text, level) {
       if (level < 3) {
         return '<h2 ' + S('h2') + '>' + text + '</h2>'
@@ -94,42 +107,42 @@ var WxRenderer = function (opts) {
     renderer.blockquote = function (text) {
       return '<blockquote ' + S('blockquote') + '>' + text + '</blockquote>'
     }
+
+    
     renderer.code = function (text, infostring) {
-      text = text.replace(/</g, "&lt;")
-      text = text.replace(/>/g, "&gt;")
-  
-      var lines = text.split('\n')
-      var codeLines = []
-      var numbers = []
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i]
-        codeLines.push('<code><span class="code-snippet_outer">' + (line || '<br>') + '</span></code>')
-        numbers.push('<li></li>')
-      }
       var lang = infostring || ''
-      return '<section class="code-snippet__fix code-snippet__js">'
-        + '<ul class="code-snippet__line-index code-snippet__js">' + numbers.join('')+'</ul>'
-        + '<pre class="code-snippet__js" data-lang="'+lang+'">' 
+        if(!lang){
+          text = text.replace(/</g, "&lt;")
+          text = text.replace(/>/g, "&gt;")
+        }else{
+          text = hljs.highlightAuto(text,[lang]).value
+        }
+        var lines = text.split('\n')
+        var codeLines = []
+        var numbers = []
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i]
+          codeLines.push('<code><span class="code-snippet_outer">' + (line || '<br>') + '</span></code>')
+          numbers.push('<li></li>')
+        }
+        
+        return '<section class="code-snippet__fix code-snippet__js">'
+          + '<ul class="code-snippet__line-index code-snippet__js">' + numbers.join('')+'</ul>'
+          + '<pre class="' +(lang? 'code-snippet' : '')+ 'code-snippet__js" data-lang="'+lang+'">' 
           + codeLines.join('')
-        + '</pre></section>'
+          + '</pre></section>'
     }
     renderer.codespan = function (text, infostring) {
       return '<code ' + S('codespan') + '>' + text + '</code>'
     }
     renderer.listitem = function (text) {
-      return '<span ' + S('listitem') + '><span style="margin-right: 10px;"><%s/></span>' + text + '</span>';
+      return '<span ' + S('listitem') + '><span style="margin-right: 10px;">•</span>' + text + '</span>'
     }
     renderer.list = function (text, ordered, start) {
-      var segments = text.split('<%s/>');
       if (!ordered) {
-        text = segments.join('•');
-        return '<p ' + S('ul') + '>' + text + '</p>';
+        return '<p ' + S('ul') + '>' + text + '</p>'
       }
-      text = segments[0];
-      for (var i = 1; i < segments.length; i++) {
-        text = text + i + '.' + segments[i];
-      }
-      return '<p ' + S('ol') + '>' + text + '</p>';
+      return '<p ' + S('ol') + '>' + text + '</p>'
     }
     renderer.image = function (href, title, text) {
       return '<img ' + S(ENV_STETCH_IMAGE ? 'image' : 'image_org') + ' src="' + href + '" title="'+title+'" alt="'+text+'"/>'
